@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL学习全景 - 思维导图</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --bg2: #16213e;
+    --text: #eaeaea;
+    --text-dim: #a0a0b0;
+    --border: rgba(255,255,255,0.12);
+    --card: #1e2a4a;
+    --card-hover: #243060;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-title {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+  }
+
+  .header-author {
+    font-size: 13px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.08);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Search */
+  .search-wrap {
+    position: relative;
+  }
+  .search-input {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px 8px 36px;
+    color: var(--text);
+    font-size: 14px;
+    width: 220px;
+    transition: all 0.2s;
+    outline: none;
+  }
+  .search-input:focus {
+    border-color: #667eea;
+    background: rgba(255,255,255,0.1);
+    width: 280px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.5;
+  }
+
+  /* Theme buttons */
+  .theme-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 14px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .theme-btn:hover { background: rgba(255,255,255,0.14); }
+  .theme-btn.active {
+    background: rgba(102, 126, 234, 0.3);
+    border-color: #667eea;
+    color: #a8b4fd;
+  }
+
+  .expand-all-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 14px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .expand-all-btn:hover { background: rgba(255,255,255,0.14); }
+
+  /* ===== Canvas ===== */
+  .canvas {
+    flex: 1;
+    padding: 40px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  /* ===== Mind Map Layout ===== */
+  .mindmap {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    min-width: max-content;
+    padding: 20px;
+  }
+
+  /* Center node */
+  .center-node {
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+    color: #fff;
+    padding: 20px 28px;
+    border-radius: 16px;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+    white-space: pre-line;
+    min-width: 160px;
+    align-self: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .center-node::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #667eea);
+    z-index: -1;
+    animation: glow-rotate 4s linear infinite;
+    background-size: 300% 300%;
+  }
+
+  @keyframes glow-rotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .center-subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  /* Branches container */
+  .branches {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-self: center;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+  .branches::-webkit-scrollbar { width: 4px; }
+  .branches::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+  /* Branch */
+  .branch {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Branch connector line */
+  .branch-connector {
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+    flex-shrink: 0;
+    align-self: center;
+    margin: 0 0;
+  }
+
+  /* Branch node (part title) */
+  .branch-node {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    white-space: pre-line;
+    line-height: 1.4;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .branch-node:hover {
+    transform: translateX(3px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+
+  .branch-node .toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    opacity: 0.6;
+    transition: transform 0.2s;
+  }
+
+  .branch-node.collapsed .toggle-icon { transform: translateY(-50%) rotate(-90deg); }
+
+  /* Chapter nodes */
+  .chapter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 24px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    margin-left: 8px;
+    overflow: hidden;
+    max-height: 2000px;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    opacity: 1;
+  }
+
+  .chapter-list.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .chapter-node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,0.04);
+    position: relative;
+  }
+
+  .chapter-node:hover {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.12);
+    transform: translateX(4px);
+  }
+
+  .chapter-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Leaf nodes */
+  .leaf-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-left: 28px;
+    overflow: hidden;
+    max-height: 2000px;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+    opacity: 1;
+  }
+
+  .leaf-list.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .leaf-node {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,0.02);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .leaf-node:hover {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    transform: translateX(4px);
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .leaf-bullet {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+
+  /* ===== Stats Bar ===== */
+  .stats-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(15, 12, 41, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-dim);
+    z-index: 100;
+  }
+
+  .stats-left { display: flex; gap: 20px; }
+  .stat-item span { color: var(--text); font-weight: 600; }
+
+  /* ===== Highlight ===== */
+  .highlight {
+    background: rgba(255, 213, 79, 0.25) !important;
+    border-color: rgba(255, 213, 79, 0.5) !important;
+    color: #ffd54f !important;
+  }
+
+  .highlight-path {
+    background: rgba(100, 181, 246, 0.15) !important;
+  }
+
+  /* ===== Light Theme ===== */
+  body.light {
+    --bg: #f5f6fa;
+    --bg2: #ffffff;
+    --text: #2d3436;
+    --text-dim: #636e72;
+    --border: rgba(0,0,0,0.1);
+    --card: #ffffff;
+    --card-hover: #f0f2f8;
+  }
+  body.light .header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+  }
+  body.light .header-title {
+    background: linear-gradient(90deg, #fff, #e0e0ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  body.light .header-author { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); }
+  body.light .search-input { background: rgba(255,255,255,0.3); color: #fff; border-color: rgba(255,255,255,0.3); }
+  body.light .search-input::placeholder { color: rgba(255,255,255,0.6); }
+  body.light .search-input:focus { border-color: #fff; }
+  body.light .theme-btn, body.light .expand-all-btn { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: #fff; }
+  body.light .theme-btn:hover, body.light .expand-all-btn:hover { background: rgba(255,255,255,0.28); }
+  body.light .theme-btn.active { background: rgba(255,255,255,0.3); border-color: #fff; color: #fff; }
+  body.light .leaf-node { color: #4a5568; background: rgba(0,0,0,0.03); }
+  body.light .leaf-node:hover { background: rgba(102,126,234,0.08); color: #667eea; border-color: rgba(102,126,234,0.2); }
+  body.light .chapter-node { color: #2d3436; background: rgba(0,0,0,0.04); }
+  body.light .chapter-node:hover { background: rgba(102,126,234,0.08); color: #667eea; border-color: rgba(102,126,234,0.15); }
+  body.light .branch-node { color: #fff; }
+  body.light .center-node { box-shadow: 0 8px 32px rgba(102, 126, 234, 0.35); }
+  body.light .chapter-list, body.light .leaf-list { border-left-color: rgba(0,0,0,0.1); }
+  body.light .stats-bar { background: rgba(255,255,255,0.95); border-top-color: rgba(0,0,0,0.08); }
+  body.light .stat-item span { color: #667eea; }
+
+  /* ===== No results ===== */
+  .no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .mindmap { flex-direction: column; align-items: center; }
+    .header { flex-direction: column; align-items: flex-start; }
+    .search-input { width: 180px; }
+    .search-input:focus { width: 220px; }
+    .header-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <span class="header-title">SQL学习全景</span>
+    <span class="header-author">作者：野阔江流</span>
+  </div>
+  <div class="header-right">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索章节内容...">
+    </div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 夜间</button>
+    <button class="expand-all-btn" id="expandBtn" onclick="toggleAll()">⬇ 展开全部</button>
+  </div>
+</div>
+
+<!-- Canvas -->
+<div class="canvas" id="canvas">
+  <div class="mindmap" id="mindmap"></div>
+</div>
+
+<!-- Stats -->
+<div class="stats-bar">
+  <div class="stats-left">
+    <span class="stat-item">章节: <span id="chapterCount">0</span></span>
+    <span class="stat-item">子节点: <span id="leafCount">0</span></span>
+    <span class="stat-item">匹配: <span id="matchCount">0</span></span>
+  </div>
+  <span>SQL学习全景 · 思维导图 · 野阔江流</span>
+</div>
+
+<script>
+const DATA = {
+  "title": "SQL学习全景",
+  "author": "野阔江流",
+  "parts": [
+    {
+      "name": "SQL基础",
+      "color": "#E74C3C",
+      "chapters": [
+        {"title": "了解SQL", "children": ["SQL早已不是小鲜肉了", "数据库按规模分类", "数据库按架构分类", "数据库按用途分类", "SQL方言", "SQL标准", "SQL:2016", "SQL的分类", "SQL的子语言", "学习路线"]},
+        {"title": "DBMS", "children": ["数据库", "数据库系统", "DBMS", "存储管理器", "查询处理器", "事务管理器", "SQL引擎", "缓冲区管理", "日志管理"]},
+        {"title": "SQL执行", "children": ["Oracle执行", "Shared Pool", "Library Cache", "Parse优化", "Soft Parse", "Hard Parse", "绑定变量", "执行计划", "PL/SQL"]},
+        {"title": "DDL", "children": ["CREATE", "ALTER", "DROP", "TRUNCATE", "RENAME", "COMMENT", "表操作", "索引", "约束", "视图"]}
+      ]
+    },
+    {
+      "name": "数据检索",
+      "color": "#9B59B6",
+      "chapters": [
+        {"title": "SELECT", "children": ["列选择", "去重", "WHERE条件", "ORDER BY", "GROUP BY", "HAVING", "子查询", "连接", "UNION", "分页"]},
+        {"title": "过滤", "children": ["比较运算符", "BETWEEN", "IN", "LIKE", "NULL", "NOT", "AND", "OR", "优先级", "ESCAPE"]},
+        {"title": "函数", "children": ["字符串函数", "数值函数", "日期函数", "转换函数", "CASE WHEN", "DECODE", "聚合函数", "分析函数", "窗口函数"]},
+        {"title": "JOIN", "children": ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN", "CROSS JOIN", "SQL-86", "SQL-89", "SQL标准"]}
+      ]
+    },
+    {
+      "name": "高级查询",
+      "color": "#3498DB",
+      "chapters": [
+        {"title": "SQL99", "children": ["CROSS APPLY", "OUTER APPLY", "LATERAL", "NATURAL JOIN", "USING", "ROLLUP", "CUBE", "GROUPING SETS"]},
+        {"title": "视图", "children": ["视图概念", "可更新视图", "物化视图", "视图限制", "视图安全", "视图性能", "创建", "修改", "删除"]},
+        {"title": "存储过程", "children": ["创建", "修改", "删除", "参数", "返回值", "事务控制", "错误处理", "触发器", "函数"]},
+        {"title": "事务", "children": ["ACID", "BEGIN", "COMMIT", "ROLLBACK", "Savepoint", "自动提交", "隐式事务", "显式事务"]}
+      ]
+    },
+    {
+      "name": "事务机制",
+      "color": "#1ABC9C",
+      "chapters": [
+        {"title": "隔离级别", "children": ["脏读", "不可重复读", "幻读", "READ UNCOMMITTED", "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE", "设置隔离级"]},
+        {"title": "游标", "children": ["显式游标", "隐式游标", "游标属性", "OPEN", "FETCH", "CLOSE", "FOR循环", "REF CURSOR"]},
+        {"title": "MVCC", "children": ["Undo", "ReadView", "活跃事务", "可见性判断", "一致性读", "当前读", "快照读"]},
+        {"title": "锁", "children": ["DL锁", "TX锁", "TM锁", "表级锁", "行级锁", "S锁", "X锁", "意向锁", "死锁"]}
+      ]
+    },
+    {
+      "name": "Python",
+      "color": "#E91E63",
+      "chapters": [
+        {"title": "Python+MySQL", "children": ["DB API", "pymysql", "mysql-connector", "连接池", "事务", "异常处理", "参数化查询", "批量插入"]},
+        {"title": "SQLAlchemy", "children": ["ORM框架", "Core", "Engine", "Session", "Model", "查询", "关系", "Eager Loading", "Lazy Loading"]}
+      ]
+    },
+    {
+      "name": "数据库设计",
+      "color": "#F39C12",
+      "chapters": [
+        {"title": "设计范式", "children": ["1NF", "2NF", "3NF", "BCNF", "4NF", "5NF", "反范式", "范式化"]},
+        {"title": "3NF不足", "children": ["BCNF问题", "JOIN计算", "反范式设计", "预计算", "分区", "分层", "读写分离", "分库分表"]},
+        {"title": "查询优化器", "children": ["RBO", "CBO", "统计信息", "直方图", "基数", "成本", "Hint", "执行计划"]}
+      ]
+    },
+    {
+      "name": "性能优化",
+      "color": "#607D8B",
+      "chapters": [
+        {"title": "数据库调优", "children": ["响应时间", "吞吐量", "并发", "资源利用", "SQL调优", "应用调优", "架构调优"]},
+        {"title": "索引概览", "children": ["B树索引", "位图索引", "函数索引", "聚簇索引", "非聚簇索引", "堆表", "索引组织表"]},
+        {"title": "索引结构", "children": ["B+树", "B-树", "平衡树", "叶子节点", "非叶子节点", "分支因子"]},
+        {"title": "Hash索引", "children": ["Hash原理", "Hash冲突", "Hash函数", "Hash桶", "等值查询", "范围查询"]},
+        {"title": "索引原则", "children": ["高选择列", "复合索引", "最左前缀", "覆盖索引", "索引失效", "Hint"]},
+        {"title": "数据页", "children": ["页结构", "行格式", "行溢出", "页分裂", "页合并", "空闲空间"]},
+        {"title": "磁盘IO", "children": ["顺序IO", "随机IO", "预读", "缓冲", "OS缓存", "Direct IO"]},
+        {"title": "理想索引", "children": ["分区裁剪", "索引下推", "ICP", "MRR", "BKA", "覆盖索引"]}
+      ]
+    }
+  ]
+};
+let allExpanded = true;
+
+function buildMindMap() {
+  const container = document.getElementById('mindmap');
+  container.innerHTML = '';
+
+  // Left branches
+  const leftCol = document.createElement('div');
+  leftCol.className = 'branches';
+  leftCol.id = 'leftBranches';
+
+  // Right branches
+  const rightCol = document.createElement('div');
+  rightCol.className = 'branches';
+  rightCol.id = 'rightBranches';
+
+  // Center node
+  const center = document.createElement('div');
+  center.className = 'center-node';
+  center.innerHTML = DATA.title + '<div class="center-subtitle">思维导图 · SQL MIND MAP</div>';
+  center.title = '作者：' + DATA.author;
+
+  // Distribute branches: first 4 on left, last 3 on right (including appendix)
+  const branches = DATA.branches;
+  const half = Math.ceil(branches.length / 2);
+
+  branches.forEach((branch, idx) => {
+    const col = idx < half ? leftCol : rightCol;
+    col.appendChild(buildBranch(branch, idx));
+  });
+
+  container.appendChild(leftCol);
+  container.appendChild(center);
+
+  // Horizontal connector between columns
+  const connector = document.createElement('div');
+  connector.style.cssText = 'width:40px;height:2px;background:linear-gradient(90deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));align-self:center;flex-shrink:0;';
+  container.appendChild(connector);
+
+  container.appendChild(rightCol);
+
+  updateStats();
+}
+
+function buildBranch(branch, branchIdx) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'branch';
+  wrapper.dataset.branchIdx = branchIdx;
+
+  // Branch title node
+  const node = document.createElement('div');
+  node.className = 'branch-node';
+  node.style.cssText = `background:${branch.color};color:#fff;`;
+  node.innerHTML = branch.title + '<span class="toggle-icon">▼</span>';
+  node.onclick = (e) => {
+    e.stopPropagation();
+    toggleBranch(wrapper, node);
+  };
+
+  // Chapter list
+  const list = document.createElement('div');
+  list.className = 'chapter-list';
+  list.id = 'blist-' + branchIdx;
+
+  if (branch.children && branch.children.length > 0) {
+    branch.children.forEach((chapter) => {
+      list.appendChild(buildChapter(chapter, branch.color));
+    });
+  }
+
+  wrapper.appendChild(node);
+  wrapper.appendChild(list);
+  return wrapper;
+}
+
+function buildChapter(chapter, branchColor) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'chapter-wrap';
+
+  const node = document.createElement('div');
+  node.className = 'chapter-node';
+  node.style.borderLeftColor = branchColor;
+
+  const dot = document.createElement('span');
+  dot.className = 'chapter-dot';
+  dot.style.background = branchColor;
+
+  const title = document.createElement('span');
+  title.style.flex = '1';
+  title.textContent = chapter.title;
+
+  const hasLeaves = chapter.children && chapter.children.length > 0;
+  const toggle = document.createElement('span');
+  toggle.style.cssText = 'font-size:9px;opacity:0.4;transition:transform 0.2s;';
+
+  if (hasLeaves) {
+    toggle.textContent = '▼';
+  } else {
+    toggle.textContent = '○';
+  }
+
+  node.appendChild(dot);
+  node.appendChild(title);
+  node.appendChild(toggle);
+
+  node.onclick = (e) => {
+    e.stopPropagation();
+    if (hasLeaves) {
+      toggleLeaves(wrapper, node, toggle);
+    }
+  };
+
+  wrapper.appendChild(node);
+
+  if (hasLeaves) {
+    const leafList = document.createElement('div');
+    leafList.className = 'leaf-list';
+
+    chapter.children.forEach((leafTitle) => {
+      leafList.appendChild(buildLeaf(leafTitle, branchColor));
+    });
+
+    wrapper.appendChild(leafList);
+  }
+
+  return wrapper;
+}
+
+function buildLeaf(title, color) {
+  const node = document.createElement('div');
+  node.className = 'leaf-node';
+  node.dataset.searchText = title.toLowerCase();
+
+  const bullet = document.createElement('span');
+  bullet.className = 'leaf-bullet';
+  bullet.style.background = color;
+
+  const text = document.createElement('span');
+  text.textContent = title;
+
+  node.appendChild(bullet);
+  node.appendChild(text);
+  return node;
+}
+
+function toggleBranch(wrapper, node) {
+  const list = wrapper.querySelector('.chapter-list');
+  if (!list) return;
+
+  const isCollapsed = list.classList.contains('collapsed');
+  if (isCollapsed) {
+    list.classList.remove('collapsed');
+    node.classList.remove('collapsed');
+    node.querySelector('.toggle-icon').textContent = '▼';
+  } else {
+    list.classList.add('collapsed');
+    node.classList.add('collapsed');
+    node.querySelector('.toggle-icon').textContent = '▶';
+  }
+}
+
+function toggleLeaves(wrapper, node, toggle) {
+  const leafList = wrapper.querySelector('.leaf-list');
+  if (!leafList) return;
+
+  const isCollapsed = leafList.classList.contains('collapsed');
+  if (isCollapsed) {
+    leafList.classList.remove('collapsed');
+    toggle.textContent = '▼';
+    toggle.style.transform = 'rotate(0deg)';
+  } else {
+    leafList.classList.add('collapsed');
+    toggle.textContent = '▶';
+    toggle.style.transform = 'rotate(-90deg)';
+  }
+}
+
+function toggleAll() {
+  allExpanded = !allExpanded;
+  const btn = document.getElementById('expandBtn');
+  const lists = document.querySelectorAll('.chapter-list, .leaf-list');
+
+  if (allExpanded) {
+    btn.textContent = '⬆ 收起全部';
+    lists.forEach(l => l.classList.remove('collapsed'));
+    document.querySelectorAll('.toggle-icon').forEach(t => t.textContent = '▼');
+    document.querySelectorAll('.leaf-list').forEach((leafList) => {
+      leafList.previousElementSibling.querySelector('span[style*="9px"]').textContent = '▼';
+    });
+  } else {
+    btn.textContent = '⬇ 展开全部';
+    lists.forEach(l => l.classList.add('collapsed'));
+    document.querySelectorAll('.branch-node .toggle-icon').forEach(t => t.textContent = '▶');
+    document.querySelectorAll('.leaf-list').forEach((leafList) => {
+      leafList.previousElementSibling.querySelector('span[style*="9px"]').textContent = '▶';
+    });
+  }
+}
+
+function toggleTheme() {
+  const btn = document.getElementById('themeBtn');
+  const isLight = document.body.classList.toggle('light');
+  btn.textContent = isLight ? '☀️ 日间' : '🌙 夜间';
+  localStorage.setItem('mindmap-theme', isLight ? 'light' : 'dark');
+}
+
+function searchNodes(query) {
+  query = query.toLowerCase().trim();
+  const allLeaves = document.querySelectorAll('.leaf-node');
+  const allChapters = document.querySelectorAll('.chapter-node');
+  const allBranches = document.querySelectorAll('.branch-node');
+  let matchCount = 0;
+
+  // Clear previous highlights
+  document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+  document.querySelectorAll('.highlight-path').forEach(el => el.classList.remove('highlight-path'));
+
+  if (!query) {
+    document.getElementById('matchCount').textContent = '0';
+    return;
+  }
+
+  // Highlight matching leaves
+  allLeaves.forEach(leaf => {
+    const text = leaf.dataset.searchText || '';
+    if (text.includes(query)) {
+      leaf.classList.add('highlight');
+      // Expand parent leaf list
+      const leafList = leaf.closest('.leaf-list');
+      if (leafList) leafList.classList.remove('collapsed');
+      matchCount++;
+    }
+  });
+
+  // Highlight matching chapters
+  allChapters.forEach(ch => {
+    const text = ch.querySelector('span:nth-child(2)').textContent.toLowerCase();
+    if (text.includes(query)) {
+      ch.classList.add('highlight');
+      // Expand parent chapter list
+      const chapterList = ch.closest('.chapter-list');
+      if (chapterList) chapterList.classList.remove('collapsed');
+      matchCount++;
+    }
+  });
+
+  // Highlight matching branches
+  allBranches.forEach(bn => {
+    const text = bn.textContent.replace('▼', '').replace('▶', '').toLowerCase();
+    if (text.includes(query)) {
+      bn.classList.add('highlight');
+      matchCount++;
+    }
+  });
+
+  // Highlight parent paths
+  document.querySelectorAll('.highlight').forEach(el => {
+    let parent = el.closest('.chapter-list');
+    if (parent) parent.classList.remove('collapsed');
+    parent = el.closest('.branch');
+    if (parent) {
+      const list = parent.querySelector('.chapter-list');
+      if (list) list.classList.remove('collapsed');
+    }
+  });
+
+  document.getElementById('matchCount').textContent = matchCount;
+}
+
+function updateStats() {
+  const chapters = document.querySelectorAll('.chapter-node').length;
+  const leaves = document.querySelectorAll('.leaf-node').length;
+  document.getElementById('chapterCount').textContent = chapters;
+  document.getElementById('leafCount').textContent = leaves;
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  buildMindMap();
+
+  // Restore theme
+  const savedTheme = localStorage.getItem('mindmap-theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('themeBtn').textContent = '☀️ 日间';
+  }
+
+  // Search
+  const searchInput = document.getElementById('searchInput');
+  let debounceTimer;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => searchNodes(searchInput.value), 200);
+  });
+});
+</script>
+</body>
+</html>
