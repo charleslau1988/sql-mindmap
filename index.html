@@ -1,79 +1,725 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>SQL学习全景</title>
+<title>SQL知识点速查 - 交互式思维导图</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Segoe UI, sans-serif; background: #f5f7fa; min-height: 100vh; }
-.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
-.header h1 { font-size: 24px; margin-bottom: 5px; }
-.header .author { font-size: 14px; opacity: 0.8; }
-.toolbar { background: white; padding: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.search-input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-.btn { padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
-.btn:hover { background: #5568d3; }
-.stats { font-size: 14px; color: #666; margin-left: auto; }
-.container { padding: 20px; }
-.chapter { background: white; border-radius: 8px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.chapter-header { background: #f8f9fa; padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-.chapter-title { font-size: 18px; font-weight: 600; color: #333; }
-.chapter-arrow { transition: transform 0.3s; }
-.chapter.collapsed .chapter-arrow { transform: rotate(-90deg); }
-.chapter.collapsed .chapter-content { display: none; }
-.chapter-content { padding: 15px 20px; border-top: 1px solid #eee; }
-.chapter-content li { margin: 8px 0; padding-left: 20px; position: relative; color: #555; line-height: 1.6; }
-.chapter-content li:before { content: "›"; position: absolute; left: 0; color: #667eea; }
-.night-mode { background: #1a1a2e; color: #eee; }
-.night-mode .chapter { background: #16213e; }
-.night-mode .chapter-header { background: #0f3460; }
-.night-mode .chapter-content li { color: #ccc; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;background:#f8f9fa;color:#2c3e50}
+.header{background:linear-gradient(135deg,#e67e22,#f39c12);color:white;padding:30px 40px;text-align:center}
+.header h1{font-size:28px;margin-bottom:8px}
+.header p{opacity:.85;font-size:14px}
+.toolbar{display:flex;justify-content:center;gap:12px;padding:16px;background:white;border-bottom:1px solid #e9ecef;flex-wrap:wrap}
+.toolbar button{padding:8px 20px;border:none;border-radius:6px;cursor:pointer;font-size:13px;transition:all .2s;font-family:inherit;color:white}
+.btn-expand-all{background:#e67e22}.btn-collapse-all{background:#6c757d}.btn-search{background:#17a2b8}
+.toolbar button:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.15)}
+#searchInput{padding:8px 16px;border:1px solid #ddd;border-radius:6px;font-size:13px;width:240px;font-family:inherit;display:none}
+.mindmap{max-width:1400px;margin:24px auto;padding:0 20px}
+.node-root{text-align:center;margin-bottom:28px}
+.root-title{display:inline-block;background:linear-gradient(135deg,#e67e22,#f39c12);color:white;padding:18px 48px;border-radius:12px;font-size:22px;font-weight:bold;box-shadow:0 4px 15px rgba(230,126,34,.4);letter-spacing:2px}
+.branch{margin-left:0;position:relative;padding-left:32px;border-left:3px solid #dee2e6;margin-top:6px;margin-bottom:14px}
+.branch::before{content:"";position:absolute;left:-1.5px;top:22px;width:18px;height:3px;background:#dee2e6}
+.branch-header{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:10px 16px;border-radius:10px;transition:all .25s;margin-bottom:6px}
+.branch-header:hover{transform:translateX(4px);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.toggle-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;flex-shrink:0;transition:transform .3s cubic-bezier(.68,-.55,.27,1.55);color:white;font-style:normal}
+.toggle-icon.expanded{transform:rotate(90deg)}
+.branch-title{font-size:15px;font-weight:600;flex:1}
+.badge{font-size:11px;padding:2px 10px;border-radius:12px;color:white;font-weight:normal;opacity:.9}
+.c-red .branch-header{background:linear-gradient(135deg,#ffe5e5,#ffd6d6);border-left:4px solid #e74c3c}
+.c-red .toggle-icon{background:#e74c3c}.c-red .badge{background:#e74c3c}
+.c-blue .branch-header{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-left:4px solid #1565c0}
+.c-blue .toggle-icon{background:#1565c0}.c-blue .badge{background:#1565c0}
+.c-green .branch-header{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-left:4px solid #2e7d32}
+.c-green .toggle-icon{background:#2e7d32}.c-green .badge{background:#2e7d32}
+.c-purple .branch-header{background:linear-gradient(135deg,#f3e5f5,#e1bee7);border-left:4px solid #7b1fa2}
+.c-purple .toggle-icon{background:#7b1fa2}.c-purple .badge{background:#7b1fa2}
+.c-orange .branch-header{background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-left:4px solid #e65100}
+.c-orange .toggle-icon{background:#e65100}.c-orange .badge{background:#e65100}
+.c-teal .branch-header{background:linear-gradient(135deg,#e0f2f1,#b2dfdb);border-left:4px solid #00695c}
+.c-teal .toggle-icon{background:#00695c}.c-teal .badge{background:#00695c}
+.c-pink .branch-header{background:linear-gradient(135deg,#fce4ec,#f8bbd0);border-left:4px solid #c2185b}
+.c-pink .toggle-icon{background:#c2185b}.c-pink .badge{background:#c2185b}
+.c-indigo .branch-header{background:linear-gradient(135deg,#e8eaf6,#c5cae9);border-left:4px solid #283593}
+.c-indigo .toggle-icon{background:#283593}.c-indigo .badge{background:#283593}
+.c-brown .branch-header{background:linear-gradient(135deg,#efebe9,#d7ccc8);border-left:4px solid #4e342e}
+.c-brown .toggle-icon{background:#4e342e}.c-brown .badge{background:#4e342e}
+.sub-branch{margin-left:20px;padding-left:24px;border-left:2px solid #e9ecef;margin-top:4px;margin-bottom:8px;position:relative}
+.sub-branch::before{content:"";position:absolute;left:-1px;top:18px;width:14px;height:2px;background:#e9ecef}
+.sub-header{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:7px 12px;border-radius:8px;transition:all .2s;background:#fafbfc;border-left:3px solid transparent;font-size:13.5px}
+.sub-header:hover{background:#f0f4f8;border-left-color:#adb5bd;transform:translateX(2px)}
+.sub-toggle{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;flex-shrink:0;transition:transform .3s;color:white;font-style:normal;background:#adb5bd}
+.sub-toggle.expanded{transform:rotate(90deg)}
+.sub-title{font-weight:500;color:#495057;flex:1}
+.leaves{margin-left:16px;margin-top:4px}
+.leaf{display:inline-block;margin:3px 6px 3px 0;padding:5px 12px;background:white;border:1px solid #e9ecef;border-radius:6px;font-size:12.5px;color:#495057;transition:all .2s;line-height:1.6}
+.leaf:hover{border-color:#e67e22;color:#e67e22;box-shadow:0 2px 6px rgba(230,126,34,.15);transform:translateY(-1px)}
+.detail-card{background:white;border:1px solid #e9ecef;border-radius:8px;padding:12px 16px;margin:6px 0 6px 16px;font-size:12.5px;color:#6c757d;line-height:1.7}
+.detail-card strong{color:#495057}
+.detail-card code{background:#f1f3f5;padding:1px 6px;border-radius:4px;font-size:11.5px;color:#e83e8c}
+.children{overflow:hidden;transition:max-height .4s ease-out,opacity .3s}
+.children.collapsed{max-height:0!important;opacity:0;pointer-events:none}
+.search-highlight{background:#fff176;padding:0 2px;border-radius:2px}
+.stats-bar{display:flex;justify-content:center;gap:30px;padding:16px;background:white;border-top:1px solid #e9ecef;margin-top:20px;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-num{font-size:24px;font-weight:bold;color:#e67e22}
+.stat-label{font-size:12px;color:#868e96;margin-top:2px}
+.footer{text-align:center;padding:20px;color:#adb5bd;font-size:12px}
+.table-mini{border-collapse:collapse;margin:6px 0 6px 16px;font-size:12px;width:auto;max-width:calc(100% - 32px)}
+.table-mini th{background:#f1f3f5;padding:5px 10px;border:1px solid #dee2e6;text-align:left;font-weight:600;white-space:nowrap}
+.table-mini td{padding:4px 10px;border:1px solid #dee2e6;vertical-align:top}
+.table-mini tr:hover td{background:#f8f9fa}
+pre.code-block{background:#1e1e2e;color:#cdd6f4;padding:12px 16px;border-radius:8px;margin:6px 0 6px 16px;font-size:11.5px;line-height:1.6;overflow-x:auto;font-family:"JetBrains Mono","Fira Code","Consolas",monospace}
+pre.code-block .kw{color:#89dceb}.code-block .fn{color:#a6e3a1}.code-block .cm{color:#6c7086}.code-block .str{color:#f9e2af}.code-block .num{color:#fab387}
 </style>
 </head>
 <body>
-<div class="header">
-<h1>SQL学习全景</h1>
-<p class="author">作者：野阔江流</p>
-</div>
-<div class="toolbar">
-<input type="text" class="search-input" placeholder="搜索章节内容..." id="search">
-<button class="btn" onclick="expandAll()">展开全部</button>
-<button class="btn" onclick="toggleNight()">夜间</button>
-<span class="stats" id="stats">章节: 29 | 子节点: 562 | 匹配: 0</span>
-</div>
-<div class="container" id="container">
-<div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">了解SQL</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>SQL已经无处不在</li><li>对于不同职位的人来说都有价值：产品经理、开发人员、运营人员、数据分析师等</li><li>对于不同的技术来说，掌握SQL也很有价值：OLTP，OLAP，NoSQL，用于XML的SQL，用于JSON的SQL，用于地理位置信息的SQL，用于搜索的SQL，用于时间序列数据的SQL，用于流的SQL等</li><li>关注半衰期长的语言</li><li>与其关注那些变化的事，不如关注哪些事情是不变的</li><li>SQL语言很少变化，半衰期长</li><li>程序员的半衰期是15年，而大部分人在追逐最新的技术</li><li>20%的时间产生80%的收益，先将自己的时间和精力投入到这些不变的技术身上</li><li>入门SQL并不难</li><li>SQL语言的四个部分：DDL，DML，DCL，DQL</li><li>SQL 是为数不多的声明性语言，学习SQL就像是学习英文语法一样</li><li>一旦掌握会让你在日常工作中成就感倍增</li><li>在职场上我们的价值取决于别人依赖于我们的程度，而非我们依赖于别人的程度</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">DBMS的前世今生</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>DB，DBS，DBMS区别</li><li>DB的英文是DataBase，也就是数据库，它是存储数据的集合，你可以理解为多个数据表。</li><li>DBS的英文是DataBase System，数据库系统，它是更大的概念，包括了数据库和数据库管理系统，以及数据库管理人员DBA。</li><li>DBMS的英文全称是DataBase Management System，数据库管理系统，实际上它是对多个数据库的管理，DBMS = 多个数据库（DB） + 管理程序。</li><li>排名前20的DBMS</li><li>关系型数据库绝对是DBMS的主流，其中使用最多的DBMS分别是Oracle，MySQL和SQL Server。</li><li>NoSQL泛指非关系型数据库</li><li>键值型数据库</li><li>文档型数据库</li><li>搜索引擎</li><li>列式数据库</li><li>图形数据库</li><li>SQL阵营与NoSQL阵营</li><li>NoSQL最早的提出是想远离SQL，但是随着发展却发现越来越离不开SQL</li><li>NoSQL是对SQL很好的补充</li><li>SQL阵营</li><li>Oracle：第一个商用关系型数据库，企业级软件霸主</li><li>MySQL：开源数据库，被Oracle收购，MariaDB是MySQL的分支</li><li>SQL Server：微软商用关系型数据库，同时Access是桌面数据库</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">SQL是如何执行的</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>Oracle中的SQL执行</li><li>流程：语法检查，语义检查，权限检查，共享池检查，优化器，执行器</li><li>共享池：Oracle中的术语，包括了库缓存（library cache），数据字典缓冲区等</li><li>软解析：在共享池中，首先对SQL语句进行Hash运算，然后根据Hash值在库缓存（library cache）中查找，如果存在SQL语句的执行计划，就直接拿来执行。也就是直接进入到执行器的环节。</li><li>硬解析：如果没有找到SQL语句和执行计划，就需要自己来创建解析树进行解析，生成执行计划。对应的是优化器这个步骤。</li><li>MySQL中的SQL执行</li><li>主要层次：连接层、SQL层、存储引擎层</li><li>连接层：客户端和server建立连接，客户端发送SQL至server。</li><li>SQL层：对SQL语句进行查询处理。</li><li>存储引擎层：负责数据的存储和读取，是与数据库文件打交道。</li><li>在SQL层中，会进行：解析器-&gt;优化器-&gt;执行器。8.0版本之前提供查询缓存，8.0版本之后不支持查询缓存</li><li>存储引擎：InnoDB、MyISAM、Memory、NDB、Archive等</li><li>数据库也是一种软件</li><li>从软件的思维了解执行的流程，比如通过MySQL profile来分析资源使用情况</li><li>不同的软件实现方式不同，但都有共性的地方，即：解析器-&gt;优化器-&gt;执行器</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">DDL语法</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>基础语法</li><li>DDL的英文全称是Data Definition Language，中文是数据库定义语言。它定义了数据库的结构和数据表的结构</li><li>对数据库进行定义：CREATE DATABASE，DROP DATABASE</li><li>对数据表进行定义</li><li>创建：CREATE TABLE [table_name](字段名 数据类型，......)</li><li>修改：ALTER TABLE</li><li>可视化管理和设计工具：Navicat</li><li>数据表的常见约束</li><li>主键约束：主键起到唯一标识一条记录的作用，不能重复，不能为空。</li><li>外键约束：外键是确保了表与表之间引用完整性。一个表中的外键对应的另一张表的主键。外键可以是重复的，也可以为空。</li><li>唯一性约束：唯一性约束表明了字段在表中的数值是唯一的，即使我们已经有了主键，还可以对其他字段进行唯一性约束。</li><li>NOT NULL约束：字段的为空约束</li><li>DEFAULT：字段默认值</li><li>CHECK约束：用来检查特定字段取值范围的有效性</li><li>设计数据表的原则</li><li>数据表的个数越少越好</li><li>数据表中的字段个数越少越好</li><li>数据表中联合主键的字段个数越少越好</li><li>使用主键和外键越多越好</li><li>“三少一多”原则的核心就是“简单可复用”</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">SELECT检索数据</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>基础语法</li><li>SELECT检索一列，多列，所有列</li><li>使用列别名进行检索：AS</li><li>SELECT查询还可以对常数进行查询</li><li>从结果中去掉重复的行：DISTICT</li><li>排序检索数据</li><li>排序的列名：ORDER BY后面可以有一个或多个列名</li><li>排序的顺序：ORDER BY后面可以注明排序规则，ASC代表递增排序，DESC代表递减排序。</li><li>非选择列排序：ORDER BY是可以使用非选择列进行排序的</li><li>ORDER BY的位置：ORDER BY通常位于SELECT语句的最后一条子句</li><li>SELECT查询效率</li><li>尽量避免使用SELECT *</li><li>在查询过程中，我们可以约束返回结果的数量</li><li>不同DBMS约束返回数量的关键字不同</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">数据过滤</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>比较运算符</li><li>等于，不等于，小于，小于等于，大于，大于等于</li><li>在指定的两个数值之间：BETWEEN</li><li>为空值：IS NULL</li><li>逻辑运算符</li><li>如果我们存在多个WHERE条件子句，就需要使用逻辑运算符</li><li>并且：AND</li><li>或者：OR</li><li>在指定条件范围内：IN</li><li>非（否定）：NOT</li><li>使用通配符进行过滤</li><li>LIKE操作符</li><li>通配符%：匹配任意字符串出现任意次数</li><li>通配符_：匹配单个字符</li><li>尽量避免使用通配符，尤其是在LIKE后面就直接跟上通配符的情况</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">SQL函数</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>SQL标准</li><li>SQL-86，SQL-89，SQL:2003, SQL:2008, SQL:2011,SQL:2016</li><li>SQL92和SQL99是经典的SQL标准，也分别称为SQL-2和SQL-3</li><li>SQL92的标准有500页，而SQL99标准超过了1000页，只需要掌握核心内容即可</li><li>SQL92中的连接</li><li>笛卡尔积：X和Y的笛卡尔积就是X和Y的所有可能组合</li><li>等值连接：两张表的等值连接就是用两张表中都存在的列进行等值连接，结果为这两张表的交集部分。</li><li>非等值连接：进行多表查询的时候，如果连接多个表的条件是等号时，就是等值连接，其他的运算符连接就是非等值查询。</li><li>外连接：除了查询满足条件的记录以外，外连接还可以查询某一方不满足条件的记录。</li><li>自连接：连接可以对多个表进行操作，也可以对同一个表进行操作，也就是自连接。</li><li>案例</li><li>NBA球员表，球队表，身高等级表：player, team, height_grades</li><li>掌握使用连接进行复杂查询</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">SQL标准&连接表</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>SQL标准</li><li>SQL-86，SQL-89，SQL:2003, SQL:2008, SQL:2011,SQL:2016</li><li>SQL92和SQL99是经典的SQL标准，也分别称为SQL-2和SQL-3</li><li>SQL92的标准有500页，而SQL99标准超过了1000页，只需要掌握核心内容即可</li><li>SQL92中的连接</li><li>笛卡尔积：X和Y的笛卡尔积就是X和Y的所有可能组合</li><li>等值连接：两张表的等值连接就是用两张表中都存在的列进行等值连接，结果为这两张表的交集部分。</li><li>非等值连接：进行多表查询的时候，如果连接多个表的条件是等号时，就是等值连接，其他的运算符连接就是非等值查询。</li><li>外连接：除了查询满足条件的记录以外，外连接还可以查询某一方不满足条件的记录。</li><li>自连接：连接可以对多个表进行操作，也可以对同一个表进行操作，也就是自连接。</li><li>案例</li><li>NBA球员表，球队表，身高等级表：player, team, height_grades</li><li>掌握使用连接进行复杂查询</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">SQL99</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>SQL92中的连接</li><li>交叉连接：笛卡尔积，即table1和table2的所有可能组合</li><li>自然连接：NATURAL JOIN，你可以把它理解为是SQL92中的等值连接。实际上它会帮你自动查询两张连接表中所有相同的字段进行等值连接。</li><li>ON连接：用来指定我们想要的连接条件</li><li>USING连接：可以用USING指定连接的同名字段进行等值连接</li><li>外连接：左外连接，右外连接，全外连接</li><li>自连接：自连接的原理在SQL92和SQL99中是一样的，只是表述方式不同。</li><li>SQL99与SQL92的区别</li><li>SQL92中的WHERE和SQL99中的JOIN</li><li>多表连接建议使用SQL99标准，因为层次性更强，可读性更强</li><li>SQL99在SQL92基础上提供了一些特殊语法，比如NATURAL JOIN和JOIN USING，在实际使用中还是比较常用的</li><li>不同DBMS中使用连接需要注意的地方</li><li>不是所有DBMS都支持全外连接</li><li>Oracle没有表别名AS</li><li>SQLite的外连接只有左连接</li><li>关于连接的性能问题</li><li>严格控制连接表的数量</li><li>在连接时不要忘记WHERE语句</li><li>使用自连接而不是子查询</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">视图</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>视图操作</li><li>视图就是一张虚拟表，它帮我们封装了底层与数据表的接口，我们通过设计视图的字段来定义我们想要从数据表中查询的内容</li><li>创建视图：CREATE VIEW</li><li>修改视图：ALTER VIEW</li><li>删除视图：DROP VIEW</li><li>嵌套视图：在视图之上还可以嵌套视图</li><li>如何使用视图简化SQL操作</li><li>视图的作用是：封装SQL查询，提升SQL复用率</li><li>利用视图完成复杂的连接</li><li>利用视图对数据进行格式化</li><li>使用视图和计算字段</li><li>视图 VS 临时表</li><li>视图是虚拟表，临时表是真实存在的数据表，但是是临时性的，用完了会删除</li><li>临时表只在当前连接存在，关闭连接后，临时表就会自动释放。</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">存储过程</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>如何创建存储过程</li><li>概念：存储过程可以说是由SQL语句和控制流语句构成的语句集合</li><li>创建：CREATE PROCEDURE 存储过程名称([参数列表])</li><li>删除：DROP PROCEDURE</li><li>更新：ALTER PROCEDURE</li><li>使用DELIMITER定义结束符，Navicat中不需要进行定义</li><li>存储过程的三种参数类型：IN，OUT，INOUT</li><li>流控制语句</li><li>BEGIN...END：BEGIN...END中间包含了多个语句，每个语句都是以;号为结束符</li><li>DECLARE：声明变量</li><li>SET：赋值语句</li><li>SELECT...INTO：把我们从数据表中查询的结果存放到变量中</li><li>IF...THEN...ENDIF：条件判断语句</li><li>CASE：我们在使用CASE的时候有两种方式，分别是CASE语句和CASE表达式</li><li>LOOP，LEAVE，ITERATE：LOOP是循环语句，LEAVE跳出循环，ITERATE来直接进入下一次循环</li><li>REPEAT...UNTIL...END REPEAT：循环语句，实现会先执行一次循环，然后在UNTIL中进行表达式的判断，如果满足条件就退出</li><li>WHILE...DO...END WHILE：循环语句，和REPEAT循环不同的是，我们需要先进行条件判断，如果满足条件就进行循环，如果不满足条件就退出循环。</li><li>关于存储过程的争议</li><li>有些公司对于大型项目要求使用存储过程，而有些则在手册中明确禁止使用存储过程</li><li>优点</li><li>一次编译多次使用，提升SQL的执行效率</li><li>减少开发工作量</li><li>安全性强</li><li>减少网络传输量</li><li>缺点</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">事务处理</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>事务的特性</li><li>概念：将多个数据库读或写的操作组成一个基本单元，ACID是其四大特性</li><li>A：原子性，英文是Atomicity，原子的概念就是不可分割，你可以理解它是组成物质的基本单位，也是我们进行数据库操作的基本单位。</li><li>C：一致性，英文是Consistency，一致性指的就是数据库在进行事务操作后，会由原来的一致状态（valid state），变成另一种一致的状态。</li><li>I：隔离性，英文是Isolation，它指的是每个事务都是彼此独立的，不会受到其他事务的执行影响。也就是说一个事务在commit之前，对其他事务都是不可见的。</li><li>D：持久性，英文是Durability，事务提交之后对数据的修改是持久性的。即使在系统出现故障的情况下，数据的修改依然是有效的。</li><li>事务的控制</li><li>事务的两种类型：隐式事务和显式事务</li><li>MySQL：隐式事务（默认），Oracle：显式事务（默认）</li><li>START TRANSACTION或者 BEGIN，作用是显式的开启一个事务</li><li>COMMIT，提交事务，当提交事务后，就会对数据库的修改成为永久性的</li><li>ROLLBACK或者ROLLBACK TO [SAVEPOINT]，回滚事务，就是撤销正在进行的所有没有提交的修改。或者将事务回滚到某个保存点</li><li>SAVEPOINT，在事务中创建保存点，方便后续针对保存点进行回滚，一个事务中可以存在多个保存点</li><li>RELEASE SAVEPOINT，删除某个保存点</li><li>SET TRANSACTION，设置事务的隔离级别</li><li>针对MySQL，我们还需要了解autocommit和completition_type的取值</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">事务的隔离级别</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>三种异常问题</li><li>脏读（dirty read）：读到了其他事务还没有提交的数据；</li><li>不可重复读（unrepeatable read）：对某数据进行读取发现两次读取的结果不同，也就是没有读到相同的内容。这是因为有其他事务对这个数据进行了修改或删除。</li><li>幻读（phantom read）：事务A根据条件查询得到了N条数据，但是此时事务B更改或者增加了M条符合事务A查询条件的数据，这样当事务A再次进行查询的时候发现会有N+M条数据，因此产生了幻读。</li><li>四种隔离级别</li><li>读未提交，也就是允许读到未提交的数据，这种情况下查询是不会使用锁的，也就是会产生脏读、不可重复度、幻读等情况。</li><li>读已提交，也就是只能读到已经提交的内容，可以避免脏读的情况方式，但是如果想要避免不可重复读，或者幻读，就需要我们在SQL查询的时候进行显示的加锁。</li><li>可重复读，保证一个事务在相同查询条件下两次查询得到的数据结果是一致的。避免了“不可重复度”这种异常情况，同时也能避免脏读，但是无法避免幻读。</li><li>可串行化，将事务进行串行化，也就是在一个队列中按照顺序执行，可串行化是最高级别的隔离等级，牺牲了系统的并发性，但可以解决事务读取中所有可能出现的异常情况。</li><li>RDBMS默认隔离级别</li><li>Oracle, SQL Server：读已提交，属于在RDBMS中常见的默认隔离级别，</li><li>MySQL：可重复读</li><li>使用MySQL客户端来模拟三种异常</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">游标</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>什么是游标</li><li>在SQL中游标是一种临时的数据库对象，可以指向存储在数据库表中的数据行指针。这里游标充当了指针的作用。</li><li>游标是面向过程的编程方式，这与面向集合的编程方式不同</li><li>常用步骤</li><li>定义游标：DECLARE cursor_name CURSOR FOR select_statement</li><li>打开游标：OPEN cursor_name</li><li>从游标中取得数据：FETCH cursor_name INTO var_name ...</li><li>关闭游标：CLOSE cursor_name</li><li>释放游标：DEALLOCATE PREPARE</li><li>说明：不同的RDBMS的使用语法略有不同</li><li>游标性能</li><li>好处：灵活性强，可以解决复杂的数据处理问题，对数据行进行逐行扫描处理</li><li>不足：使用游标的过程中会对数据行进行加锁，当业务并发量大的时候，会影响到业务的效率。同时游标是在内存中进行的处理，会消耗系统资源，容易造成内存不足。</li><li>建议：通常游标有替代方案的时候，可以采用替代方案，如果实在绕不开有时候还是会用到游标</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">使用Python操作MySQL</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>DB API规范</li><li>作用：实现多种DBMS的统一访问，切换DBMS的成本低</li><li>主要对象：数据库连接对象connection, 数据库交互对象cursor, 数据库异常类exceptions</li><li>使用步骤：引入API模块，与数据库建立连接，执行SQL语句，关闭数据库连接</li><li>mysql-connector</li><li>MySQL 官方提供的驱动器</li><li>安装：pip install mysql-connector</li><li>connection的使用</li><li>通过指定host, user, passwd,port等参数来创建数据库连接</li><li>关闭数据库连接，使用db.close()</li><li>创建游标来操作数据库中的数据，使用db.cursor()</li><li>开启事务，使用db.begin()</li><li>事务提交及回滚，使用db.commit()和db.rollback()</li><li>cursor 的使用</li><li>执行数据库查询，使用cursor.execute(query_sql)</li><li>取出数据集中的一条数据，使用cursor.fetchone()</li><li>取出数据集中的所有行，使用cursor.fetchall()，返回一个元组tuples类型</li><li>取出数据集中的多条数据，使用cursor.fetchmany(n)，同样返回一个元组tuples</li><li>返回查询结果集中的行数，使用cursor.rowcount，如果没有查询到数据或者还没有查询则结果为-1，否则会返回查询得到的数据行数</li><li>关闭游标，使用cursor.close()</li><li>对数据表进行增删改查</li><li>使用Python对数据表进行CRUD操作</li><li>在打开数据库连接后，如果不再使用了需要关闭数据库连接，以免造成资源浪费</li><li>数据CRUD时，可能会出现异常，需要对异常信息进行捕获</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">SQLAlchemy</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>ORM框架</li><li>持久化就是将对象数据永久的存储在数据库中，ORM框架就是通过持久化层完成业务逻辑层和数据库层之间的转换</li><li>ORM的英文是Object Relation Mapping，中文叫对象关系映射。它是RDBMS和业务实体对象之间的一个映射</li><li>好处：简单可复用，不用关注底层的数据库访问细节，注意力关注到业务逻辑层。</li><li>不足：对于复杂的数据查询，采用ORM会力不从心，同时在效率上也会有损耗</li><li>Python中的ORM框架</li><li>Django：Python的WEB应用开发框架，本身是走大而全的方式，通过 models 实现数据库的增删改查操作</li><li>SQLALchemy：Python中最常用的ORM框架之一，如果你既想支持ORM方式，又想支持原生SQL，SQLALchemy是很好的选择，社区也很活跃</li><li>peewee，轻量级的ORM框架，API简单，且易于理解和使用，学习成本低</li><li>ORM与数据库的对应关系</li><li>类 &lt;=&gt; 数据表</li><li>类实例对象 &lt;=&gt; 数据行</li><li>属性 &lt;=&gt; 字段</li><li>SQLAlchemy使用</li><li>安装：pip install sqlalchemy</li><li>初始化数据库连接：engine = create_engine('mysql+mysqlconnector://root:password@localhost:3306/wucai')</li><li>查询数据：filter()</li><li>增加数据：session.add()，需要使用session.commit()进行提交</li><li>删除数据：先进行查询，然后session.delete()，再session.commit()进行提交</li><li>修改数据：先进行查询，然后对属性值进行修改，再进行session.commit()即可</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">数据库调优</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>调优目标</li><li>目标：让数据库运行的更快，也就响应的时间更快，同时吞吐量更大</li><li>微观反馈</li><li>用户的反馈：业务的使用者，有些问题往往是用户第一时间发现的</li><li>日志分析：通过数据库日志，操作系统日志等找出异常情况，定位问题位置</li><li>宏观反馈</li><li>服务器资源使用监控：CPU、内存、IO等使用情况</li><li>数据库内部状况监控：活动会话（Active Session）监控了解数据库是否当前处于非常繁忙的状态，是否存在SQL堆积等。还可以对事务、锁等待等进行监控</li><li>调优方法</li><li>Step1、选择适合的DBMS</li><li>Step2、表设计优化</li><li>尽量采用第三范式原则</li><li>适当进行反范式优化</li><li>表字段的数据类型选择</li><li>Step3、逻辑查询优化</li><li>采用SQL语句等价变换的方式，对查询进行重写，数学基础是关系代数。</li><li>SQL查询重写包括了：子查询优化，等价谓词重写，视图重写，条件简化，连接消除，嵌套连接消除等</li><li>Step4、物理查询优化</li><li>物理查询优化是将逻辑查询执行计划变成物理操作符，为执行器提供执行准备。</li><li>创建索引</li><li>如果数据重复度高，就不需要创建索引（比如重复度超过10%）</li><li>索引列的位置对使用索引的影响</li><li>联合索引对索引使用的影响</li><li>多个索引对索引使用的影响</li><li>确定访问路径</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">设计范式</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>设计范式的种类</li><li>1NF（第一范式）、2NF（第二范式）、3NF（第三范式）、BCNF（巴斯范式）、4NF（第四范式）和5NF（第五范式，又叫做完美范式）</li><li>越高阶的范式数据库的冗余度越低</li><li>高阶的范式一定符合低阶范式的要求</li><li>键&amp;属性的定义</li><li>超键，能唯一标识元组的属性集叫做超键</li><li>候选键，如果超键不包括多余的属性，那么这个超键就是候选键</li><li>主键，用户可以从候选键中选择一个作为主键</li><li>外键，如果数据表R1中的某属性集不是R1的主键，而是另一个数据表R2的主键，那么这个属性集就是数据表R1的外键。</li><li>主属性：包含在任一候选键中的属性称主属性。</li><li>非主属性，与主属性相对的，指的是不包含在任何一个候选键中的属性。</li><li>三种设计范式</li><li>1NF指的是数据库表中的任何属性都是原子性的，不可再分。</li><li>2NF指的数据表里的非主属性都要和这个数据表的候选键有完全依赖关系。</li><li>3NF首先需要满足2NF，然后对于任何非主属性都不传递依赖于候选键。</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">3NF的不足</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>BCNF</li><li>3NF存在的问题：即使数据表符合3NF的要求，同样可能存在插入，更新和删除的异常情况。</li><li>BCNF，也叫做巴斯范式，它在3NF的基础上消除主属性对于候选键的部分依赖或者传递依赖。</li><li>数据库与数据仓库的区别</li><li>数据库设计的目的在于捕获数据，而数据仓库设计的目的在于分析数据</li><li>数据库对数据的增删改实时性要求强，存储在线的用户数据，而数据仓库存储的一般是历史数据</li><li>数据库设计尽量避免冗余，但有时候为了提供查询效率也允许一定的冗余度，而数据仓库在设计上采用反范式更加常见</li><li>反范式设计</li><li>范式的目的是降低数据冗余度，而反范式会增加数据冗余度</li><li>如果多张表进行关联查询的时候，想要提升查询的效率，可以允许适当的数据冗余度</li><li>如果需要历史快照，可以考虑增加数据冗余度，采用反范式设计</li><li>数据仓库通常会采用反范式设计</li><li>实际工作中，需要根据需求将范式和反范式结合使用</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">索引概览</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>索引的作用</li><li>概念：索引就是帮助数据库管理系统高效获取数据的数据结构。</li><li>索引不是万能的</li><li>数据表中的数据行数少的情况下，不需要创建索引的（比如行数小于1000）</li><li>当数据重复度大，就不需要对这个字段使用索引（比如高于10%）</li><li>索引的种类</li><li>功能逻辑</li><li>普通索引：是基础的索引，没有任何约束，主要用于提高查询效率</li><li>唯一索引：在普通索引的基础上增加了数据唯一性的约束，在一张数据表里可以有多个唯一索引</li><li>主键索引：在唯一索引的基础上增加了为空的约束，也就是NOT NULL+UNIQUE，同时一张表里最多只有一个主键索引</li><li>全文索引：MySQL自带的全文索引只能用在InnoDB和MyISAM，并且只能对英文进行全文索引。我们可以采用专门的全文搜索引擎，比如ES(ElasticSearch), Solr</li><li>物理实现</li><li>聚集索引：按照主键的维度来排序存储数据，对数据的查询效率高</li><li>非聚集索引：在数据库系统会有单独的存储空间存放非聚集索引，这些索引项是顺序存储的，但索引项指向的内容是随机存储的。</li><li>字段个数</li><li>单一索引：索引列为一列时为单一索引</li><li>联合索引：多个列组合在一起创建的索引</li><li>SQL查询实验</li><li>实验1：数据行数少的情况下，索引效率如何</li><li>实验2：性别（男或女）字段真的不应该创建索引么？</li><li>实验3：使用聚集索引和非聚集索引的查询效率</li><li>实验4：联合索引的最左原则</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">索引的数据结构</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>索引的数据结构评价</li><li>数据库服务器有两种存储介质：硬盘和内存。内存是临时存储，硬盘是永久存储介质</li><li>索引只能放到硬盘中，因此磁盘的IO次数决定了索引数据结构查询性能的好坏</li><li>二叉树</li><li>如果key大于根节点，则在右子树中进行查找；</li><li>如果key小于根节点，则在左子树中进行查找；</li><li>如果key等于根节点，也就是找到了这个节点，返回根节点即可</li><li>AVL树：平衡二分搜索树，每个节点的左子树和右子树的高度差不能超过1</li><li>采用二叉树的数据结构，树的高度大，磁盘IO操作多，影响查询效率</li><li>B树</li><li>B树：Balance Tree，也就是平衡的多路搜索树</li><li>特点：它的高度要远小于平衡二叉树的高度，所以在文件系统和数据库系统中的索引结构经常采用B树来实现。</li><li>B树的特性</li><li>根节点的儿子数的范围是[2,M]</li><li>每个中间节点包含k-1个关键字和k个孩子</li><li>叶子节点包括k-1个关键字（叶子节点没有孩子）</li><li>所有叶子节点位于同一层</li><li>B+树</li><li>B+树是基于B树的改进</li><li>与B树的差异</li><li>有 k 个孩子的节点就有k个关键字</li><li>非叶子节点的关键字也会同时存在在子节点中，并且是在子节点中所有关键字的最大（或最小）。</li><li>非叶子节点仅用于索引，不保存数据记录。跟记录有关的信息都放在叶子节点中</li><li>所有所有关键字都在叶子节点出现，叶子节点构成一个有序链表，而且叶子节点本身按照关键字的大小从小到大顺序链接。</li><li>查询效率对比</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">Hash索引</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>理解Hash</li><li>Hash函数，又称为散列函数，通过它可以大幅提升我们检索数据的效率。</li><li>Hash是现代密码学的核心，它被用于各种安全验证场景，比如密码存储，文件验证系统</li><li>MD5就是Hash函数的一种，Hash函数有多种映射方式</li><li>动手实现Hash检索对比</li><li>采用Python数组的形式添加10000个元素，并对元素进行检索</li><li>采用Python字典（Hash）形式添加10000个元素，并对元素进行检索</li><li>检索效率对比：数组检索用时1.2秒，字典检索用时1毫秒</li><li>MySQL中的Hash索引</li><li>Hash索引的流程：键值=&gt;桶=&gt;数据行</li><li>桶（bucket）指的是一个能存储一条或多条记录的存储单位。</li><li>Hash冲突：多个键值对应同一个桶，会在桶中进行键值的查找。</li><li>Hash值的字节数比较少，简单的4个字节就够了，多的16位或者32位</li><li>MySQL中采用的是“自适应Hash索引”的方式</li><li>B+树索引的区别</li><li>Hash索引不能进行范围查询</li><li>Hash索引不支持联合索引的最左侧原则，即联合索引的部分索引无法使用</li><li>Hash索引不支持ORDER BY排序</li><li>Hash索引不能进行模糊查询</li><li>如果字段的重复值较多，Hash索引效率可能比B+树索引效率低</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">索引的使用原则</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>什么情况下使用索引</li><li>字段的数值有唯一性的限制，比如用户名</li><li>频繁作为WHERE查询条件的字段，尤其数据表大的情况下效果更明显</li><li>需要经常GROUP BY和ORDER BY的列</li><li>UPDATE、DELETE的WHERE条件列，一般也需要创建索引</li><li>DISTINCT字段需要创建索引</li><li>多表连接JOIN时</li><li>连接的表的数量尽量不要超过3张</li><li>对WHERE条件创建索引</li><li>对用于连接的字段创建索引，并且该字段在多张表中的类型必须一致</li><li>什么时候不需要创建索引</li><li>WHERE条件（包括GROUP BY, ORDER BY）里用不到的字段，不需要创建索引</li><li>表记录太少，比如少于1000，是不需要创建索引的</li><li>字段中如果有大量重复数据，就不用创建索引</li><li>频繁更新的字段不一定要创建索引，因为有很高的索引维护成本</li><li>采用二叉树的数据结构，树的高度大，磁盘IO操作多，影响查询效率</li><li>什么情况下索引失效</li><li>如果索引进行了表达式计算，则会失效</li><li>如果对索引使用函数，也会造成失效</li><li>在WHERE子句中，如果是OR条件，如果有一个条件列没有进行索引，那其他索引也会失效。</li><li>当我们使用LIKE进行模糊查询的时候，后面不能是%</li><li>索引列尽量设置为NOT NULL约束（可以更好的利用索引）</li><li>使用联合索引的时候要注意最左原则</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">数据页</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>数据库中的存储结构</li><li>页（Page）是数据库管理存储空间的基本单位</li><li>区（Extent）是比页大一级的存储结构，在InnoDB存储引擎中，一个区会分配64个连续的页</li><li>段（Segment）由一个或多个区组成，不同类型的数据库对象，段的形式不同。</li><li>表空间（Tablespace）是一个逻辑容器，表空间存储的对象是段，因此在一个表空间中可以有一个或多个段，但是一个段只能属于一个表空间。</li><li>数据页的结构</li><li>页（Page）如果按类型划分的话，常见的有数据页（保存B树节点），系统页，Undo页，事务数据页等</li><li>页的大小</li><li>InnoDB存储引擎中默认是16KB</li><li>SQL Server的页大小为8KB</li><li>Oracle中用术语“块”（Block）来代表“页”，支持的块大小为2KB，4KB，8KB，16KB，32KB和64KB</li><li>7个部分组成</li><li>File Header，文件头，描述页的信息</li><li>Page Header，页头，页的状态信息</li><li>Infimum + Supremum，最小和最大记录，这是两个虚拟的行记录</li><li>User Records，用户记录，存储行记录内容</li><li>Free Space，空闲空间，页中没有使用的空间</li><li>Page Directory，页目录，存储用户记录的相对位置</li><li>File Trailer，文件尾，校验页是否完整</li><li>作用上可以分成3个部分</li><li>文件通用部分，也就是文件头和文件尾，类似集装箱一样，将页的内容进行了封装</li><li>记录部分，页的主要作用是存储记录，占据主要空间</li><li>索引部分，这部分重点指的是页目录，起到了记录的索引作用</li><li>页内的记录查找方式：通过页目录（存储的是槽，槽相当于分组记录的索引）对记录进行二分查找</li><li>理解B+树的查询方式</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">磁盘IO</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>缓冲池</li><li>作用：DBMS会申请占用内存来作为数据缓冲池，最小化磁盘活动</li><li>如何读取数据：首先会判断该页面是否在缓冲池中，如果存在就直接读取，否则才会通过内存或磁盘将页面存放到缓冲池中进行读取。</li><li>如何更新数据：记录进行修改时，首先会修改缓冲池中的页里面的记录信息，然后缓冲池会采用一种checkpoint的机制以一定的频率刷新到磁盘上。</li><li>查看缓冲池的大小：在InnoDB中对应的 innodb_buffer_pool_size 变量</li><li>查看缓冲池的个数：在InnoDB中对应的 innodb_buffer_pool_instances 变量</li><li>数据页加载的三种方式</li><li>内存读取，如果该数据存在在内存中，基本上执行时间在1ms，效率还是很高的。</li><li>随机读取，如果没有在内存中，我们就需要在磁盘上对该页进行查找，整体时间预估在10ms</li><li>顺序读取，批量读取的方式，如果磁盘吞吐量是40MB/S，页大小为16KB，那么一页的读取时间在0.4ms</li><li>统计SQL语句查询成本</li><li>如何确定查询计划：如果存在多种查询计划的话，MySQL会计算每个查询计划所需要的成本，从中选择成本最小的一个作为最终执行的查询计划</li><li>last_query_cost</li><li>指令：SHOW STATUS LIKE 'last_query_cost'</li><li>作用：统计刚才执行的SQL语句需要加载多少个页面</li><li>如果采用顺序读取的方式，即使加载的页面多，查询时间变化也不大</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">理想的索引</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>索引片</li><li>索引片就是 SQL查询语句在执行中需要扫描的一个索引片段，你可以把它理解为定义索引匹配列的数量</li><li>宽索引：索引片中的匹配列数量多，大于2；窄索引：索引片中的匹配列少，1-2</li><li>如何通过宽索引避免回表：将SELECT中的字段添加到索引片中，避免回表</li><li>过滤因子的计算：这个满足这个谓词条件列的记录数除以总记录数的比例</li><li>过滤因子的条件过滤能力越强，满足条件的记录数就越少，SQL查询需要扫描的索引片也就越小。同理，如果没有选择好过滤因子，就会造成索引片中的记录数过多。</li><li>三星索引</li><li>Star1，在WHERE条件中，找到所有等值谓词中的条件列，作为索引片中的开始列</li><li>Star2，将 GROUP BY和ORDER BY中的列加入到索引中</li><li>Star3，需要将SELECT字段中剩余的列加入到索引中</li><li>原理：Star1 最小化索引片， Star2 避免排序，Star3 避免回表查询</li><li>理想的索引设计很难存在</li><li>采用三星索引会让索引变宽，这样每个页（page）能够存储的索引数据就会变少，从而增加了页加载的数量。</li><li>虽然提升了单个SQL查询的效率，但是增加了索引维护的成本。</li><li>设计合理的索引</li><li>一张表的索引个数不宜过多</li><li>在索引片中，需要控制索引列的数量</li><li>单列索引和复合索引的长度需要控制</li><li>没有理想的索引，只有适合的索引设计。需要在索引效率和维护成本中进行平衡</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">锁的划分</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>按照锁的粒度</li><li>行锁：按照行的粒度对数据进行锁定，锁定力度小，因此发生锁冲突概率低，可以实现并发度高。但是对于锁的开销比较大，加锁会比较慢。</li><li>页锁：页锁就是在页的粒度上进行锁定，锁定的数据资源比行锁要多，开销介于表锁和行锁之间，会出现死锁。锁定粒度介于表锁和行锁之间，并发度一般。</li><li>表锁：对数据表进行锁定，锁定粒度很大，同时发生锁冲突的概率也会较高，也就是数据访问的并发度低。不过好处在于对锁的使用开销小，加锁会很快。</li><li>MySQL中，InnoDB支持行锁，表锁；MyISAM支持表锁</li><li>Oracle支持行锁，表锁；SQL Server支持行锁、页锁、表锁</li><li>从数据库管理的角度</li><li>共享锁，也叫读锁或S锁，锁定的资源可以被其他用户读取，但不能修改</li><li>排他锁，也叫独占锁，写锁或X锁。锁定的数据只允许进行锁定操作的事务使用，而其他事务无法对已锁定的数据进行查询或修改。</li><li>意向锁，简单来说就是给更大一级别的空间示意里面是否已经上过锁。</li><li>当有多个事务对同一数据获得读锁的时候，可能会出现死锁的情况。</li><li>从程序员的角度</li><li>乐观锁，认为对同一数据的并发操作不会总发生，属于小概率事件，不采用数据库自身的锁机制，而是通过程序来实现：版本号机制，时间戳机制</li><li>悲观锁，对数据被其他事务的修改持保守态度。因此会通过数据库自身的锁机制来实现，从而保证数据操作的排他性。</li><li>适用场景：乐观锁适合读多的场景；悲观锁适合写多的场景</li><li>如何防止死锁的发生</li><li>如果事务涉及多个表，操作比较复杂，那么我们可以尽量一次锁定所有的资源，而不是逐步来获取</li><li>如果事务需要更新数据表中的大部分数据，而且数据表又比较大，这时可以采用锁升级的方式，比如将行级锁升级为表级锁</li><li>不同事务并发读写多张数据表，可以约定访问表的顺序，采用相同的顺序可以降低死锁发生的概率。</li><li>画布 1</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">MVCC</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>什么是MVCC</li><li>MVCC，通过数据行的多个版本管理来实现数据库的并发控制。</li><li>使用MVCC的好处</li><li>读写互相不阻塞</li><li>降低了死锁的概率</li><li>解决一致性读的问题</li><li>快照读：读取的是快照数据（历史版本）</li><li>当前读：读取最新数据。加锁的SELECT，或者插入，删除，更新都会进行当前读</li><li>InnoDB中的MVCC</li><li>事务版本号：当我们每次开启一个事务，都会从数据库中获得一个事务ID，这个事务ID是自增长的，所以通过ID大小可以判断出来事务的时间顺序</li><li>行记录的隐藏列</li><li>db_row_id，隐藏的行ID</li><li>db_trx_id，操作这个数据的事务ID</li><li>db_roll_ptr，回滚指针</li><li>Undo Log，InnoDB将我们的行记录快照保存在了Undo Log里</li><li>Read View是如何工作的</li><li>作用：帮我们解决了行的可见性问题</li><li>Read View的结构</li><li>trx_ids，系统当前正在活跃的事务ID集合。</li><li>low_limit_id，活跃的事务中最大的事务ID。</li><li>up_limit_id，活跃的事务中最小的事务ID</li><li>creator_trx_id, 创建这个Read View的事务ID</li><li>Read View的原则</li><li>trx_id &lt; up_limit_id</li><li>trx_id &gt; low_limit_id</li></ul></div><div class="chapter"><div class="chapter-header" onclick="toggleChapter(this)"><span class="chapter-title">查询优化器</span><span class="chapter-arrow">▼</span></div><ul class="chapter-content"><li>什么是查询优化器</li><li>SQL查询的执行步骤</li><li>分析器：包括了语法分析，语义检查</li><li>优化器：逻辑查询优化，物理查询优化</li><li>执行器：将确定的执行计划进行执行</li><li>查询优化器的目标是找到执行SQL查询的最佳执行计划</li><li>执行计划就是查询树，它是由一系列物理操作符组成，这些操作符按照一定的运算关系组成查询的执行计划。</li><li>优化器的两个阶段</li><li>逻辑查询优化，通过改变SQL语句的内容来使得SQL查询更高效，同时为物理查询优化提供更多的候选执行计划。</li><li>物理查询优化，关系代数的每一步都对应着物理计算，这些物理计算往往存在多种算法，因此需要计算各种物理路径的代价，从中选择最小的代价作为执行计划。</li><li>两种优化方式</li><li>基于规则的优化器：RBO，通过在优化器里面嵌入规则，来判断SQL查询符合哪种规则从而制定执行计划</li><li>基于代价的优化器：会根据代价评估模型，计算每条可能的执行计划的代价，也就是COST，从中选择代价最小的作为执行计划。</li><li>RBO像出租车老司机，从A到B的路径靠自己的经验来规划。而CBO更像是手机导航，通过数据来驱动选择最佳的执行路径。</li><li>SQL是面向集合的语言，是解释性语言，不同的数据库优化器的实现原理不同</li><li>CBO是如何统计代价的</li><li>大部分关系型数据库都支持基于代价的优化器（CBO），CBO随着版本的迭代也越来越成熟，但是CBO依然存在着缺陷</li><li>代价模型中可以配置的参数</li><li>Server层</li><li>对应mysql.server_cost数据表</li><li>disk_temptable_create_cost，表示临时表文件（MyISAM或InnoDB）的创建代价，默认值为20</li><li>disk_temptable_row_cost，表示临时表文件（MyISAM或InnoDB）的行代价，默认值0.5</li><li>key_compare_cost，键比较的代价，键比较的次数越多，这项的代价就越大，是个重要的指标，默认值0.05</li><li>memory_temptable_create_cost，内存中临时表的创建代价，默认值1</li><li>memory_temptable_row_cost，内存中临时表的行代价，默认值0.1</li></ul></div></div>
-<script>
-const chapters = 29;
-const subnodes = 562;
-let nightMode = false;
 
-function toggleChapter(el) {
-    el.parentElement.classList.toggle('collapsed');
+<div class="header">
+<h1>SQL 知识点速查</h1>
+<p>五大分类 · 基础查询 · 聚合函数 · JOIN · 子查询 · 事务 · 索引 · 窗口函数 · 执行顺序</p>
+<p style="font-size:13px;opacity:.7;margin-top:4px;">作者：野阔江流</p>
+</div>
+
+<div class="toolbar">
+<button class="btn-expand-all" onclick="expandAll()">展开全部</button>
+<button class="btn-collapse-all" onclick="collapseAll()">折叠全部</button>
+<button class="btn-search" onclick="toggleSearch()">搜索</button>
+<input type="text" id="searchInput" placeholder="输入关键词搜索..." oninput="doSearch(this.value)">
+</div>
+
+<div class="mindmap" id="mindmap">
+
+<!-- ROOT -->
+<div class="node node-root">
+<div class="root-title">SQL 知识点速查</div>
+<p style="margin-top:12px;color:#6c757d;font-size:13.5px;">所有缩写后均标注全称，便于理解和记忆 | 整理：刘阔</p>
+</div>
+
+<!-- 一、SQL五大分类 -->
+<div class="node branch c-red">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">一、SQL 五大分类（必背）</span><span class="badge">DDL/DML/DCL/DQL/TCL</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">分类总览</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>缩写</th><th>全称</th><th>中文</th><th>作用</th><th>关键字</th></tr></thead><tbody>
+<tr><td>DDL</td><td>Data Definition Language</td><td>数据定义语言</td><td>定义数据库对象结构</td><td>CREATE, ALTER, DROP, TRUNCATE</td></tr>
+<tr><td>DML</td><td>Data Manipulation Language</td><td>数据操作语言</td><td>增删改表中数据</td><td>INSERT, UPDATE, DELETE</td></tr>
+<tr><td>DCL</td><td>Data Control Language</td><td>数据控制语言</td><td>管理用户权限</td><td>GRANT, REVOKE</td></tr>
+<tr><td>DQL</td><td>Data Query Language</td><td>数据查询语言</td><td>查询数据</td><td>SELECT</td></tr>
+<tr><td>TCL</td><td>Transaction Control Language</td><td>事务控制语言</td><td>控制事务提交回滚</td><td>COMMIT, ROLLBACK, SAVEPOINT</td></tr>
+</tbody></table>
+</div></div>
+</div></div>
+
+<!-- 二、基础查询 -->
+<div class="node branch c-blue">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">二、基础查询</span><span class="badge">SELECT/WHERE/ORDER BY/LIMIT</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">SELECT（查询）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">SELECT</span> 列 <span class="kw">FROM</span> 表 <span class="kw">WHERE</span> 条件 <span class="kw">GROUP BY</span> 列 <span class="kw">HAVING</span> 条件 <span class="kw">ORDER BY</span> 列;</pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">WHERE（条件筛选）</span>
+</div>
+<div class="children">
+<div class="leaves"><span class="leaf">=、!=、&lt;、&gt;、&lt;=、&gt;=</span><span class="leaf">BETWEEN...AND（范围）</span><span class="leaf">IN(...)（枚举）</span><span class="leaf">LIKE（模糊匹配 % _）</span><span class="leaf">IS NULL / IS NOT NULL</span><span class="leaf">AND（且）、OR（或）、NOT（非）</span></div>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">ORDER BY（排序）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">ORDER BY</span> 列 <span class="kw">ASC;</span>        <span class="cm">-- 升序（默认）</span>
+<span class="kw">ORDER BY</span> 列 <span class="kw">DESC;</span>       <span class="cm">-- 降序</span>
+<span class="kw">ORDER BY</span> 列1 <span class="kw">ASC</span>, 列2 <span class="kw">DESC;</span></pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">LIMIT / TOP（分页）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="cm">-- MySQL / PostgreSQL</span>
+<span class="kw">LIMIT</span> <span class="num">10</span> <span class="kw">OFFSET</span> <span class="num">0</span>;
+
+<span class="cm">-- SQL Server</span>
+<span class="kw">TOP</span> <span class="num">10</span>;</pre>
+</div></div>
+</div></div>
+
+<!-- 三、聚合函数 -->
+<div class="node branch c-green">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">三、聚合函数（Aggregate Functions）</span><span class="badge">5个函数</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">COUNT / SUM / AVG / MAX / MIN</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>函数</th><th>全称</th><th>作用</th></tr></thead><tbody>
+<tr><td>COUNT()</td><td>Count</td><td>统计行数</td></tr>
+<tr><td>SUM()</td><td>Sum</td><td>求和</td></tr>
+<tr><td>AVG()</td><td>Average</td><td>求平均值</td></tr>
+<tr><td>MAX()</td><td>Maximum</td><td>求最大值</td></tr>
+<tr><td>MIN()</td><td>Minimum</td><td>求最小值</td></tr>
+</tbody></table>
+</div></div>
+</div></div>
+
+<!-- 四、分组与过滤 -->
+<div class="node branch c-orange">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">四、分组与过滤</span><span class="badge">GROUP BY + HAVING</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">GROUP BY（分组）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">SELECT</span> category, <span class="kw">COUNT</span>(*) <span class="kw">FROM</span> products <span class="kw">GROUP BY</span> category;</pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">HAVING（分组后过滤）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">SELECT</span> category, <span class="kw">AVG</span>(price)
+<span class="kw">FROM</span> products
+<span class="kw">GROUP BY</span> category
+<span class="kw">HAVING AVG</span>(price) &gt; <span class="num">100</span>;</pre>
+<div class="leaves"><span class="leaf">WHERE：过滤原始数据</span><span class="leaf">HAVING：过滤聚合结果</span></div>
+</div></div>
+</div></div>
+
+<!-- 五、表连接 -->
+<div class="node branch c-purple">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">五、表连接（JOIN）</span><span class="badge">5种连接</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">JOIN 类型</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>连接类型</th><th>说明</th></tr></thead><tbody>
+<tr><td>INNER JOIN</td><td>只返回两表匹配的行</td></tr>
+<tr><td>LEFT JOIN</td><td>返回左表全部 + 右表匹配的</td></tr>
+<tr><td>RIGHT JOIN</td><td>返回右表全部 + 左表匹配的</td></tr>
+<tr><td>FULL JOIN</td><td>返回两表全部（匹配+不匹配）</td></tr>
+<tr><td>CROSS JOIN</td><td>笛卡尔积（不常用）</td></tr>
+</tbody></table>
+<pre class="code-block"><span class="cm">-- 显式写法（推荐）</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> 表1 <span class="kw">INNER JOIN</span> 表2 <span class="kw">ON</span> 条件;
+
+<span class="cm">-- 隐式写法</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> 表1, 表2 <span class="kw">WHERE</span> 条件;</pre>
+</div></div>
+</div></div>
+
+<!-- 六、子查询 -->
+<div class="node branch c-teal">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">六、子查询（Subquery）</span><span class="badge">5种类型</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">子查询类型</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td>标量子查询 (Scalar)</td><td>返回单个值</td></tr>
+<tr><td>列子查询 (Column)</td><td>返回一列</td></tr>
+<tr><td>表子查询 (Table)</td><td>返回临时表</td></tr>
+<tr><td>EXISTS 子查询</td><td>检查是否存在</td></tr>
+<tr><td>IN 子查询</td><td>检查是否在列表中</td></tr>
+</tbody></table>
+<pre class="code-block"><span class="cm">-- 标量</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age &gt; (<span class="kw">SELECT AVG</span>(age) <span class="kw">FROM</span> users);
+
+<span class="cm">-- IN</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> orders <span class="kw">WHERE</span> user_id <span class="kw">IN</span> (<span class="kw">SELECT</span> id <span class="kw">FROM</span> vip_users);
+
+<span class="cm">-- EXISTS</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> orders o <span class="kw">WHERE EXISTS</span> (<span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> users u <span class="kw">WHERE</span> u.id = o.user_id);</pre>
+</div></div>
+</div></div>
+
+<!-- 七、约束 -->
+<div class="node branch c-pink">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">七、约束（Constraint）</span><span class="badge">10种约束</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">约束总览</span>
+</div>
+<div class="children">
+<div class="leaves"><span class="leaf">PRIMARY KEY：主键，唯一且非空</span><span class="leaf">FOREIGN KEY：外键，关联另一表</span><span class="leaf">UNIQUE：唯一约束</span><span class="leaf">NOT NULL：非空约束</span><span class="leaf">CHECK：条件检查</span><span class="leaf">DEFAULT：默认值</span><span class="leaf">INDEX：索引，加速查询</span><span class="leaf">AUTO_INCREMENT：自动递增（MySQL）</span><span class="leaf">IDENTITY：自动递增（SQL Server）</span><span class="leaf">SERIAL：自动递增（PostgreSQL）</span></div>
+</div></div>
+</div></div>
+
+<!-- 八、DML -->
+<div class="node branch c-indigo">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">八、DML（数据操作）</span><span class="badge">INSERT/UPDATE/DELETE</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">INSERT（插入）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">INSERT INTO</span> 表 (列1, 列2) <span class="kw">VALUES</span> (值1, 值2);
+<span class="kw">INSERT INTO</span> 表 <span class="kw">SELECT</span> ...;           <span class="cm">-- 从查询插入</span></pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">UPDATE（更新）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">UPDATE</span> 表 <span class="kw">SET</span> 列1 = 值1 <span class="kw">WHERE</span> 条件;
+<span class="kw">UPDATE</span> 表 <span class="kw">SET</span> 列1 = 值1, 列2 = 值2;</pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">DELETE（删除）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">DELETE FROM</span> 表 <span class="kw">WHERE</span> 条件;
+<span class="kw">DELETE FROM</span> 表;                      <span class="cm">-- 删除全部</span>
+<span class="kw">TRUNCATE TABLE</span> 表;                   <span class="cm">-- 清空表（更快，不可回滚）</span></pre>
+</div></div>
+</div></div>
+
+<!-- 九、DDL -->
+<div class="node branch c-brown">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">九、DDL（数据定义）</span><span class="badge">CREATE/ALTER/DROP</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">CREATE（创建）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">CREATE DATABASE</span> 数据库名;
+<span class="kw">CREATE TABLE</span> 表名 (
+    id <span class="kw">INT PRIMARY KEY</span>,
+    name <span class="kw">VARCHAR(50) NOT NULL</span>,
+    age <span class="kw">INT DEFAULT</span> <span class="num">18</span>,
+    email <span class="kw">VARCHAR(100) UNIQUE</span>
+);</pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">ALTER（修改）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">ALTER TABLE</span> 表名 <span class="kw">ADD</span> 列名 类型;
+<span class="kw">ALTER TABLE</span> 表名 <span class="kw">DROP COLUMN</span> 列名;
+<span class="kw">ALTER TABLE</span> 表名 <span class="kw">MODIFY</span> 列名 新类型;
+<span class="kw">ALTER TABLE</span> 表名 <span class="kw">RENAME TO</span> 新表名;</pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">DROP（删除）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">DROP DATABASE</span> 数据库名;
+<span class="kw">DROP TABLE</span> 表名;</pre>
+</div></div>
+</div></div>
+
+<!-- 十、视图 -->
+<div class="node branch c-red">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">十、视图（VIEW）</span><span class="badge">虚拟表</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">视图操作</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">CREATE VIEW</span> v_user <span class="kw">AS</span> <span class="kw">SELECT</span> name, age <span class="kw">FROM</span> users;</pre>
+<div class="leaves"><span class="leaf">CREATE VIEW：创建视图</span><span class="leaf">DROP VIEW：删除视图</span><span class="leaf">WITH CHECK OPTION：限制更新范围</span></div>
+</div></div>
+</div></div>
+
+<!-- 十一、事务 -->
+<div class="node branch c-teal">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">十一、事务（Transaction）</span><span class="badge">ACID</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">事务控制语句</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>关键字</th><th>说明</th></tr></thead><tbody>
+<tr><td>BEGIN</td><td>开始事务</td></tr>
+<tr><td>COMMIT</td><td>提交事务</td></tr>
+<tr><td>ROLLBACK</td><td>回滚事务</td></tr>
+<tr><td>SAVEPOINT</td><td>设置保存点</td></tr>
+</tbody></table>
+<pre class="code-block"><span class="kw">BEGIN</span>;
+<span class="kw">UPDATE</span> account <span class="kw">SET</span> balance = balance - <span class="num">100</span> <span class="kw">WHERE</span> id = <span class="num">1</span>;
+<span class="kw">UPDATE</span> account <span class="kw">SET</span> balance = balance + <span class="num">100</span> <span class="kw">WHERE</span> id = <span class="num">2</span>;
+<span class="kw">COMMIT</span>;  <span class="cm">-- 或 ROLLBACK;</span></pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">ACID 特性</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>特性</th><th>说明</th></tr></thead><tbody>
+<tr><td>原子性 (Atomicity)</td><td>要么全成功，要么全失败</td></tr>
+<tr><td>一致性 (Consistency)</td><td>事务前后数据一致</td></tr>
+<tr><td>隔离性 (Isolation)</td><td>并发事务互不干扰</td></tr>
+<tr><td>持久性 (Durability)</td><td>提交后数据永久保存</td></tr>
+</tbody></table>
+</div></div>
+</div></div>
+
+<!-- 十二、索引 -->
+<div class="node branch c-blue">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">十二、索引（INDEX）</span><span class="badge">5种索引</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">索引类型</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>类型</th><th>说明</th></tr></thead><tbody>
+<tr><td>B-Tree</td><td>默认索引，范围查询快</td></tr>
+<tr><td>Hash</td><td>等值查询快</td></tr>
+<tr><td>Unique</td><td>唯一索引</td></tr>
+<tr><td>Composite</td><td>复合索引，多列组合</td></tr>
+<tr><td>Full-Text</td><td>全文索引</td></tr>
+</tbody></table>
+<pre class="code-block"><span class="kw">CREATE INDEX</span> idx_name <span class="kw">ON</span> 表名(列名);
+<span class="kw">CREATE UNIQUE INDEX</span> idx_name <span class="kw">ON</span> 表名(列名);
+<span class="kw">CREATE INDEX</span> idx_name <span class="kw">ON</span> 表名(列1, 列2);  <span class="cm">-- 复合索引</span>
+<span class="kw">DROP INDEX</span> idx_name <span class="kw">ON</span> 表名;</pre>
+</div></div>
+</div></div>
+
+<!-- 十三、常用函数 -->
+<div class="node branch c-green">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">十三、常用函数</span><span class="badge">字符串/日期/条件</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">字符串函数</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>函数</th><th>说明</th></tr></thead><tbody>
+<tr><td>CONCAT()</td><td>拼接字符串</td></tr>
+<tr><td>LENGTH()</td><td>返回长度</td></tr>
+<tr><td>UPPER() / LOWER()</td><td>转大写/小写</td></tr>
+<tr><td>TRIM()</td><td>去除首尾空格</td></tr>
+<tr><td>SUBSTRING()</td><td>截取子串</td></tr>
+<tr><td>REPLACE()</td><td>替换</td></tr>
+</tbody></table>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">日期函数</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>函数</th><th>说明</th></tr></thead><tbody>
+<tr><td>NOW()</td><td>当前日期时间</td></tr>
+<tr><td>CURDATE()</td><td>当前日期</td></tr>
+<tr><td>DATE()</td><td>提取日期部分</td></tr>
+<tr><td>DATEDIFF()</td><td>日期差</td></tr>
+<tr><td>DATE_ADD()</td><td>日期加法</td></tr>
+<tr><td>YEAR() / MONTH() / DAY()</td><td>提取年月日</td></tr>
+</tbody></table>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">条件函数</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>函数</th><th>说明</th></tr></thead><tbody>
+<tr><td>IFNULL()</td><td>NULL时替换值</td></tr>
+<tr><td>COALESCE()</td><td>返回第一个非NULL值</td></tr>
+<tr><td>CASE WHEN</td><td>条件表达式</td></tr>
+</tbody></table>
+</div></div>
+</div></div>
+
+<!-- 十四、高级特性 -->
+<div class="node branch c-purple">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">十四、高级特性</span><span class="badge">窗口函数/CTE/UNION</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">窗口函数（Window Function）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">SELECT</span> name, salary,
+    <span class="kw">SUM</span>(salary) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> dept <span class="kw">ORDER BY</span> id) <span class="kw">AS</span> running_total
+<span class="kw">FROM</span> employees;</pre>
+<table class="table-mini"><thead><tr><th>函数</th><th>说明</th></tr></thead><tbody>
+<tr><td>ROW_NUMBER()</td><td>行号（不重复）</td></tr>
+<tr><td>RANK()</td><td>排名（可并列）</td></tr>
+<tr><td>DENSE_RANK()</td><td>紧凑排名</td></tr>
+<tr><td>NTILE()</td><td>分组排名</td></tr>
+<tr><td>LAG() / LEAD()</td><td>前后行值</td></tr>
+<tr><td>SUM() OVER()</td><td>窗口求和</td></tr>
+</tbody></table>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">CTE（Common Table Expression）</span>
+</div>
+<div class="children">
+<pre class="code-block"><span class="kw">WITH</span> temp <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> age &gt; <span class="num">20</span>
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> temp;</pre>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">UNION / INTERSECT / EXCEPT</span>
+</div>
+<div class="children">
+<table class="table-mini"><thead><tr><th>操作</th><th>说明</th></tr></thead><tbody>
+<tr><td>UNION</td><td>合并去重</td></tr>
+<tr><td>UNION ALL</td><td>合并不去重</td></tr>
+<tr><td>INTERSECT</td><td>交集</td></tr>
+<tr><td>EXCEPT</td><td>差集</td></tr>
+</tbody></table>
+</div></div>
+</div></div>
+
+<!-- 十五、SQL执行顺序 -->
+<div class="node branch c-orange">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">十五、SQL 执行顺序（背这个！）</span><span class="badge">口诀</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">执行顺序</span>
+</div>
+<div class="children">
+<div class="detail-card">
+<strong>执行顺序：</strong><br><br>
+1️⃣ FROM &nbsp;&nbsp;&nbsp;-- 确定表<br>
+2️⃣ WHERE &nbsp;&nbsp;-- 筛选行<br>
+3️⃣ GROUP BY -- 分组<br>
+4️⃣ HAVING &nbsp;&nbsp;-- 分组后筛选<br>
+5️⃣ SELECT &nbsp;-- 选择列（计算表达式）<br>
+6️⃣ ORDER BY -- 排序<br>
+7️⃣ LIMIT &nbsp;&nbsp;&nbsp;-- 限制行数
+</div>
+<div class="leaves"><span class="leaf">口诀：FROM WHERE GROUP，HAVING SELECT ORDER LIMIT</span></div>
+</div></div>
+</div></div>
+
+<!-- 十六、常用关键字汇总 -->
+<div class="node branch c-slate">
+<div class="branch-header" onclick="toggle(this)">
+<i class="toggle-icon">▶</i>
+<span class="branch-title">十六、常用关键字汇总</span><span class="badge">19个关键字</span>
+</div>
+<div class="children">
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">DQL 关键字</span>
+</div>
+<div class="children">
+<div class="leaves"><span class="leaf">SELECT：查询数据</span><span class="leaf">JOIN：表连接</span><span class="leaf">WHERE：条件筛选</span><span class="leaf">GROUP BY：分组</span><span class="leaf">HAVING：分组后筛选</span><span class="leaf">ORDER BY：排序</span><span class="leaf">LIMIT：限制行数</span><span class="leaf">DISTINCT：去重</span><span class="leaf">AS：列别名</span></div>
+</div></div>
+<div class="sub-branch">
+<div class="sub-header" onclick="toggleSub(this)">
+<i class="sub-toggle">▶</i>
+<span class="sub-title">DML / DDL / DCL / TCL 关键字</span>
+</div>
+<div class="children">
+<div class="leaves"><span class="leaf">INSERT（DML）：插入数据</span><span class="leaf">UPDATE（DML）：更新数据</span><span class="leaf">DELETE（DML）：删除数据</span><span class="leaf">CREATE（DDL）：创建对象</span><span class="leaf">ALTER（DDL）：修改对象</span><span class="leaf">DROP（DDL）：删除对象</span><span class="leaf">GRANT（DCL）：授予权限</span><span class="leaf">REVOKE（DCL）：撤销权限</span><span class="leaf">COMMIT（TCL）：提交事务</span><span class="leaf">ROLLBACK（TCL）：回滚事务</span><span class="leaf">SAVEPOINT（TCL）：设置保存点</span></div>
+</div></div>
+</div></div>
+
+</div><!-- end mindmap -->
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">16</div><div class="stat-label">大章节</div></div>
+<div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">核心知识点</div></div>
+<div class="stat-item"><div class="stat-num">100+</div><div class="stat-label">详细条目</div></div>
+<div class="stat-item"><div class="stat-num">10</div><div class="stat-label">颜色主题</div></div>
+</div>
+
+<div class="footer">
+<p>SQL 知识点速查 v1.0 | 适用场景：面试准备 · 日常速查 · 培训资料</p>
+<p style="margin-top:4px;">点击每个节点可展开/收起子内容 | 支持关键词搜索高亮</p>
+</div>
+
+<script>
+function toggle(el) {
+  var icon = el.querySelector('.toggle-icon');
+  var children = el.nextElementSibling;
+  if (children.classList.contains('collapsed')) {
+    children.classList.remove('collapsed');
+    children.style.maxHeight = children.scrollHeight + 'px';
+    icon.classList.add('expanded');
+    void children.offsetWidth;
+    children.style.maxHeight = 'none';
+  } else {
+    children.style.maxHeight = children.scrollHeight + 'px';
+    void children.offsetWidth;
+    children.classList.add('collapsed');
+    icon.classList.remove('expanded');
+  }
+}
+
+function toggleSub(el) {
+  var icon = el.querySelector('.sub-toggle');
+  var children = el.nextElementSibling;
+  if (children.classList.contains('collapsed')) {
+    children.classList.remove('collapsed');
+    children.style.maxHeight = children.scrollHeight + 'px';
+    icon.classList.add('expanded');
+    void children.offsetWidth;
+    children.style.maxHeight = 'none';
+  } else {
+    children.style.maxHeight = children.scrollHeight + 'px';
+    void children.offsetWidth;
+    children.classList.add('collapsed');
+    icon.classList.remove('expanded');
+  }
 }
 
 function expandAll() {
-    document.querySelectorAll('.chapter').forEach(c => c.classList.remove('collapsed'));
+  document.querySelectorAll('.children.collapsed').forEach(function(el) {
+    el.classList.remove('collapsed');
+    el.style.maxHeight = 'none';
+  });
+  document.querySelectorAll('.toggle-icon').forEach(function(el) { el.classList.add('expanded'); });
+  document.querySelectorAll('.sub-toggle').forEach(function(el) { el.classList.add('expanded'); });
 }
 
-function toggleNight() {
-    nightMode = !nightMode;
-    document.body.classList.toggle('night-mode', nightMode);
+function collapseAll() {
+  document.querySelectorAll('.children:not(.collapsed)').forEach(function(el) {
+    if (!el.closest('.node-root')) {
+      el.style.maxHeight = el.scrollHeight + 'px';
+      void el.offsetWidth;
+      el.classList.add('collapsed');
+    }
+  });
+  document.querySelectorAll('.toggle-icon').forEach(function(el) { el.classList.remove('expanded'); });
+  document.querySelectorAll('.sub-toggle').forEach(function(el) { el.classList.remove('expanded'); });
 }
 
-let matches = 0;
-document.getElementById("search").addEventListener("input", function(e) {
-    const q = e.target.value.toLowerCase();
-    matches = 0;
-    document.querySelectorAll(".chapter").forEach(ch => {
-        const title = ch.querySelector(".chapter-title").textContent.toLowerCase();
-        const content = ch.textContent.toLowerCase();
-        const visible = (!q || title.includes(q) || content.includes(q));
-        ch.style.display = visible ? "" : "none";
-        if (visible && q) matches++;
-    });
-    document.getElementById("stats").textContent = "章节: " + chapters + " | 子节点: " + subnodes + " | 匹配: " + matches;
-});
+function toggleSearch() {
+  var input = document.getElementById('searchInput');
+  input.style.display = input.style.display === 'block' ? 'none' : 'block';
+  if (input.style.display === 'block') input.focus();
+}
+
+function doSearch(keyword) {
+  keyword = keyword.trim().toLowerCase();
+  document.querySelectorAll('.search-highlight').forEach(function(el) {
+    var parent = el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent), el);
+    parent.normalize();
+  });
+  document.querySelectorAll('.leaf.highlight').forEach(function(el) { el.classList.remove('highlight'); });
+
+  if (!keyword) return;
+
+  document.querySelectorAll('.leaf, .branch-title, .sub-title').forEach(function(el) {
+    var text = el.textContent.toLowerCase();
+    if (text.indexOf(keyword) !== -1) {
+      if (el.classList.contains('leaf')) {
+        el.classList.add('highlight');
+      } else {
+        var html = el.innerHTML;
+        var regex = new RegExp('(' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+        el.innerHTML = html.replace(regex, '<span class="search-highlight">$1</span>');
+      }
+
+      var parent = el.closest('.children');
+      while (parent && !parent.closest('.node-root')) {
+        parent.classList.remove('collapsed');
+        parent.style.maxHeight = 'none';
+        var toggleIcon = parent.previousElementSibling ? parent.previousElementSibling.querySelector('.toggle-icon, .sub-toggle') : null;
+        if (toggleIcon) toggleIcon.classList.add('expanded');
+        parent = parent.parentElement ? parent.parentElement.closest('.children') : null;
+      }
+    }
+  });
+}
 </script>
 </body>
 </html>
